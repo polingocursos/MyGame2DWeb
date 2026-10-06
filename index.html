@@ -77,6 +77,17 @@
   </style>
 </head>
 <body>
+  <!-- Captura erros antes mesmo do módulo JS carregar -->
+  <script>
+    window.onerror = function(msg, src, line, col, err) {
+      var el = document.getElementById('loading-sub');
+      if (el) el.textContent = '\u274C Erro JS: ' + msg;
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      var el = document.getElementById('loading-sub');
+      if (el) el.textContent = '\u274C Promise: ' + (e.reason && e.reason.message ? e.reason.message : String(e.reason));
+    });
+  </script>
   <div id="game-container">
     <div id="loading-screen" id="loading-screen">
       <div id="loading-title">Adventure Quest</div>

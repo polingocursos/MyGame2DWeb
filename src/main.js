@@ -7,8 +7,13 @@ import { LobbyScene } from './scenes/lobby/LobbyScene.js';
 import { GameScene  } from './scenes/game/GameScene.js';
 import { SCREEN_W, SCREEN_H, MAPS, LOBBY_BG, LOBBY_PLAY_BTN } from './constants.js';
 
+// ── Helper: atualiza texto visível na tela de loading ───────
+const _sub = document.getElementById('loading-sub');
+const _step = (msg) => { if (_sub) _sub.textContent = msg; };
+
+_step('Iniciando engine PixiJS...');
+
 // ── Filtro global de textura: linear (evita pixelação) ─────
-// Deve ser definido ANTES de qualquer asset ser carregado
 TextureSource.defaultOptions.scaleMode = 'linear';
 
 // ── Aplicação PixiJS ────────────────────────────────────────
@@ -19,9 +24,11 @@ await app.init({
   height:          SCREEN_H,
   backgroundColor: 0x05050f,
   antialias:       true,
-  resolution:      window.devicePixelRatio || 1,  // 2.0 em monitor 2x → canvas 2560×1440 físico
-  autoDensity:     true,                           // CSS mantém 1280×720 — layout intacto
+  resolution:      window.devicePixelRatio || 1,
+  autoDensity:     true,
 });
+
+_step('Engine OK! Conectando canvas...');
 
 // Injetar canvas no container do HTML
 document.getElementById('game-container').appendChild(app.canvas);
@@ -29,25 +36,28 @@ document.getElementById('game-container').appendChild(app.canvas);
 // ── Carregamento de assets ──────────────────────────────────
 const loadingBar = document.getElementById('loading-bar');
 
-// Usar listener de progresso do Assets
+_step('Registrando bundle de assets...');
 Assets.addBundle('game', {
   lobbyBg:      LOBBY_BG,
   map1Skybox:   MAPS[1].skybox,
   map1Platform: MAPS[1].platform,
 });
 
+_step('Carregando assets... (0%)');
 loadingBar.style.width = '20%';
 try {
   await Assets.loadBundle('game', (progress) => {
+    _step(`Carregando assets... (${Math.round(progress * 100)}%)`);
     loadingBar.style.width = `${20 + progress * 75}%`;
   });
+  _step('Assets carregados!');
 } catch (err) {
   console.error('[Main] Erro ao carregar assets:', err);
-  // Mostra erro na tela de loading em vez de travar
-  const sub = document.getElementById('loading-sub');
-  if (sub) sub.textContent = 'Erro ao carregar assets — continuando...';
+  _step('⚠️ Erro assets: ' + (err?.message || String(err)) + ' — continuando...');
 }
 loadingBar.style.width = '100%';
+
+_step('Iniciando lobby...');
 
 // Esconder loading screen com fade
 await new Promise(resolve => {
