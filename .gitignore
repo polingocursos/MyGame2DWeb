@@ -1,0 +1,25 @@
+# Dependências
+node_modules/
+
+# Build
+dist/
+.cache/
+
+# Vite
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

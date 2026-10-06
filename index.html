@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adventure Quest 2D</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #05050f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #game-container {
+      position: relative;
+      width: 1280px;
+      height: 720px;
+      box-shadow: 0 0 80px rgba(74, 158, 255, 0.3);
+    }
+
+    canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    #loading-screen {
+      position: absolute;
+      inset: 0;
+      background: #05050f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      z-index: 100;
+      font-family: 'Segoe UI', sans-serif;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading-title {
+      font-size: 28px;
+      letter-spacing: 8px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    #loading-sub {
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 28px;
+    }
+
+    #loading-bar-bg {
+      width: 320px;
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    #loading-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4a9eff, #a855f7);
+      border-radius: 2px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="loading-screen" id="loading-screen">
+      <div id="loading-title">Adventure Quest</div>
+      <div id="loading-sub">Carregando mundo...</div>
+      <div id="loading-bar-bg">
+        <div id="loading-bar"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
