@@ -11,7 +11,7 @@ import { SCREEN_W, SCREEN_H, MAPS, LOBBY_BG, LOBBY_PLAY_BTN } from './constants.
 const _sub = document.getElementById('loading-sub');
 const _step = (msg) => { if (_sub) _sub.textContent = msg; };
 
-_step('Iniciando engine PixiJS...');
+_step('Iniciando engine PixiJS... (WebGL)');
 
 // ── Filtro global de textura: linear (evita pixelação) ─────
 TextureSource.defaultOptions.scaleMode = 'linear';
@@ -19,14 +19,25 @@ TextureSource.defaultOptions.scaleMode = 'linear';
 // ── Aplicação PixiJS ────────────────────────────────────────
 const app = new Application();
 
-await app.init({
-  width:           SCREEN_W,
-  height:          SCREEN_H,
-  backgroundColor: 0x05050f,
-  antialias:       true,
-  resolution:      window.devicePixelRatio || 1,
-  autoDensity:     true,
-});
+try {
+  await Promise.race([
+    app.init({
+      width:           SCREEN_W,
+      height:          SCREEN_H,
+      backgroundColor: 0x05050f,
+      antialias:       true,
+      resolution:      window.devicePixelRatio || 1,
+      autoDensity:     true,
+      preference:      'webgl',   // ← força WebGL, evita WebGPU travar
+    }),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout ao iniciar renderer (8s)')), 8000)
+    ),
+  ]);
+} catch (err) {
+  _step('❌ Engine falhou: ' + (err?.message || String(err)));
+  throw err;
+}
 
 _step('Engine OK! Conectando canvas...');
 
