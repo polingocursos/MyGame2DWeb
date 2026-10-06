@@ -37,9 +37,16 @@ Assets.addBundle('game', {
 });
 
 loadingBar.style.width = '20%';
-await Assets.loadBundle('game', (progress) => {
-  loadingBar.style.width = `${20 + progress * 75}%`;
-});
+try {
+  await Assets.loadBundle('game', (progress) => {
+    loadingBar.style.width = `${20 + progress * 75}%`;
+  });
+} catch (err) {
+  console.error('[Main] Erro ao carregar assets:', err);
+  // Mostra erro na tela de loading em vez de travar
+  const sub = document.getElementById('loading-sub');
+  if (sub) sub.textContent = 'Erro ao carregar assets — continuando...';
+}
 loadingBar.style.width = '100%';
 
 // Esconder loading screen com fade
