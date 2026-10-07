@@ -10,8 +10,8 @@
 import { Container, Graphics, Text, Sprite, Assets, BlurFilter } from 'pixi.js';
 import { SCREEN_W, SCREEN_H } from '../constants.js';
 
-const CHEST_IMG        = '/assets/ui/chest.png';
-const REWARD_FRAME_IMG = '/assets/ui/reward-frame.png';
+const CHEST_IMG        = 'assets/ui/chest.png';
+const REWARD_FRAME_IMG = 'assets/ui/reward-frame.png';
 const COUNTDOWN_SEC    = 60;
 
 // Paleta de cores do neon smoke

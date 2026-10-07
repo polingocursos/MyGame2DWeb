@@ -28,7 +28,7 @@ export class ChunkManager {
     this.worldContainer  = worldContainer;
     this.mapId           = mapId;
     this.chunks          = new Map(); // Map<chunkIndex: number, Container>
-    this.platformTexture = Assets.get(`/assets/maps/map${mapId}/platform.png`);
+    this.platformTexture = Assets.get(`assets/maps/map${mapId}/platform.png`);
   }
 
   /**

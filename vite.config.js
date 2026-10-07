@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  // ✅ Paths relativos — funciona em qualquer subpath na Vercel ou outro host
+  base: './',
   build: {
     // Necessário para suportar top-level await usado no main.js
     target: 'esnext',

@@ -42,22 +42,22 @@ export const PARALLAX = {
 export const MAPS = {
   1: {
     name:      'Mountain Realm',
-    skybox:    '/assets/maps/map1/skybox.png',
-    platform:  '/assets/maps/map1/platform.png',
+    skybox:    'assets/maps/map1/skybox.png',
+    platform:  'assets/maps/map1/platform.png',
     bgColor:   0x87ceeb,
     groundY:   565,
     skyTint:   0xffffff,
   },
   // Mapas 2-4: a definir
-  2: { name: 'Caverna Sombria',   skybox: '/assets/maps/map2/skybox.png', platform: '/assets/maps/map2/platform.png', bgColor: 0x1a1a3e, groundY: 565, skyTint: 0xaaaacc },
-  3: { name: 'Floresta Mágica',   skybox: '/assets/maps/map3/skybox.png', platform: '/assets/maps/map3/platform.png', bgColor: 0x2d5a1b, groundY: 565, skyTint: 0xaaddaa },
-  4: { name: 'Céu das Nuvens',    skybox: '/assets/maps/map4/skybox.png', platform: '/assets/maps/map4/platform.png', bgColor: 0xfce4ec, groundY: 565, skyTint: 0xffd0e0 },
+  2: { name: 'Caverna Sombria',   skybox: 'assets/maps/map2/skybox.png', platform: 'assets/maps/map2/platform.png', bgColor: 0x1a1a3e, groundY: 565, skyTint: 0xaaaacc },
+  3: { name: 'Floresta Mágica',   skybox: 'assets/maps/map3/skybox.png', platform: 'assets/maps/map3/platform.png', bgColor: 0x2d5a1b, groundY: 565, skyTint: 0xaaddaa },
+  4: { name: 'Céu das Nuvens',    skybox: 'assets/maps/map4/skybox.png', platform: 'assets/maps/map4/platform.png', bgColor: 0xfce4ec, groundY: 565, skyTint: 0xffd0e0 },
 };
 
 // Imagem de fundo do lobby (independente dos mapas)
-export const LOBBY_BG       = '/assets/lobby/background.png';
-export const LOBBY_PLAY_BTN = '/assets/lobby/play-button.png';
+export const LOBBY_BG       = 'assets/lobby/background.png';
+export const LOBBY_PLAY_BTN = 'assets/lobby/play-button.png';
 
 // Áudio
-export const LOBBY_MUSIC = '/assets/audio/Bouncy Adventure.mp3';
+export const LOBBY_MUSIC = 'assets/audio/Bouncy Adventure.mp3';
 
