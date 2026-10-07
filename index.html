@@ -83,9 +83,9 @@
 
     #game-container {
       position: relative;
-      /* Escala para caber na tela mantendo 16:9 */
-      width: min(100vw, 177.78vh);   /* 177.78 = 1280/720 * 100 */
-      height: min(56.25vw, 100vh);   /* 56.25  = 720/1280 * 100 */
+      /* Desktop: máximo 1280×720. Mobile: escala para caber na tela (16:9) */
+      width:  min(1280px, min(100vw, 177.78vh));
+      height: min(720px,  min(56.25vw, 100vh));
       box-shadow: 0 0 80px rgba(74, 158, 255, 0.3);
     }
 
