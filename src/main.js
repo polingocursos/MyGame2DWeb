@@ -11,6 +11,33 @@ import { SCREEN_W, SCREEN_H, MAPS, LOBBY_BG, LOBBY_PLAY_BTN } from './constants.
 const _sub = document.getElementById('loading-sub');
 const _step = (msg) => { if (_sub) _sub.textContent = msg; };
 
+// ── Animação de "aguardando" para redes lentas ──────────────
+let _dotInterval = null;
+const _stepWaiting = (msg, timeoutMs = 0) => {
+  _step(msg);
+  clearInterval(_dotInterval);
+  if (timeoutMs > 0) {
+    const start = Date.now();
+    let dots = 0;
+    _dotInterval = setInterval(() => {
+      const elapsed = Math.round((Date.now() - start) / 1000);
+      dots = (dots + 1) % 4;
+      const bar = '.'.repeat(dots);
+      _step(`${msg}${bar} (${elapsed}s)`);
+    }, 500);
+  }
+};
+const _stopWaiting = () => clearInterval(_dotInterval);
+
+// ── Promise com timeout ──────────────────────────────────────
+const withTimeout = (promise, ms, label) =>
+  Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Timeout após ${ms / 1000}s em: ${label}`)), ms)
+    ),
+  ]);
+
 _step('Iniciando engine...');
 
 // ── Filtro global de textura: linear (evita pixelação) ─────
@@ -23,37 +50,53 @@ TextureSource.defaultOptions.scaleMode = 'linear';
 let app;
 
 async function initRenderer() {
-  _step('Iniciando engine PixiJS...');
+  // ── Tentativa 1: WebGL com timeout de 12s (redes lentas / cold start) ──
+  _stepWaiting('Iniciando engine WebGL', 12000);
   app = new Application();
 
   try {
-    await app.init({
-      width:           SCREEN_W,
-      height:          SCREEN_H,
-      backgroundColor: 0x05050f,
-      antialias:       true,
-      resolution:      window.devicePixelRatio || 1,
-      autoDensity:     true,
-      preference:      'webgl',
-      powerPreference: 'default',
-      rendererOptions: {
-        hello: false,
-      },
-    });
+    await withTimeout(
+      app.init({
+        width:           SCREEN_W,
+        height:          SCREEN_H,
+        backgroundColor: 0x05050f,
+        antialias:       true,
+        resolution:      window.devicePixelRatio || 1,
+        autoDensity:     true,
+        preference:      'webgl',
+        powerPreference: 'default',
+        rendererOptions: { hello: false },
+      }),
+      12000,
+      'app.init WebGL'
+    );
+    _stopWaiting();
     console.log('[Main] Renderer iniciado:',
       app.renderer.type === RendererType.WEBGL ? 'WebGL' : 'Canvas');
   } catch (err) {
-    console.warn('[Main] Renderer falhou, tentando Canvas...', err);
+    _stopWaiting();
+    console.warn('[Main] WebGL falhou ou timeout — tentando Canvas...', err.message);
+    _step('⚠️ WebGL lento, usando Canvas...');
+
+    // Destruir instância anterior se existir
+    try { app.destroy(); } catch (_) {}
+
+    // ── Tentativa 2: Canvas (funciona mesmo em rede lenta) ──
     app = new Application();
-    await app.init({
-      width:           SCREEN_W,
-      height:          SCREEN_H,
-      backgroundColor: 0x05050f,
-      antialias:       false,
-      resolution:      1,
-      autoDensity:     true,
-      preference:      'canvas',
-    });
+    await withTimeout(
+      app.init({
+        width:           SCREEN_W,
+        height:          SCREEN_H,
+        backgroundColor: 0x05050f,
+        antialias:       false,
+        resolution:      1,
+        autoDensity:     true,
+        preference:      'canvas',
+      }),
+      10000,
+      'app.init Canvas'
+    );
+    console.log('[Main] Renderer Canvas iniciado como fallback.');
   }
 }
 
