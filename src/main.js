@@ -11,29 +11,61 @@ import { SCREEN_W, SCREEN_H, MAPS, LOBBY_BG, LOBBY_PLAY_BTN } from './constants.
 const _sub = document.getElementById('loading-sub');
 const _step = (msg) => { if (_sub) _sub.textContent = msg; };
 
-_step('Iniciando engine PixiJS... (WebGL)');
+_step('Iniciando engine...');
 
 // ── Filtro global de textura: linear (evita pixelação) ─────
 TextureSource.defaultOptions.scaleMode = 'linear';
 
-// ── Aplicação PixiJS ────────────────────────────────────────
-const app = new Application();
+// ── Inicialização do renderer com fallback ──────────────────
+// NOTA: Não usamos timeout artificial — PixiJS pode demorar >8s para
+// compilar shaders WebGL na 1ª visita (sem cache de GPU no browser).
+// O timeout artificial causava falhas falsas no Vercel (deploy em HTTPS).
 
-try {
-  await Promise.race([
-    app.init({
+let app;
+
+async function initRenderer() {
+  // 1ª tentativa: WebGL (padrão, melhor performance)
+  try {
+    _step('Iniciando engine PixiJS... (WebGL)');
+    app = new Application();
+    await app.init({
       width:           SCREEN_W,
       height:          SCREEN_H,
       backgroundColor: 0x05050f,
       antialias:       true,
       resolution:      window.devicePixelRatio || 1,
       autoDensity:     true,
-      preference:      'webgl',   // ← força WebGL, evita WebGPU travar
-    }),
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Timeout ao iniciar renderer (8s)')), 8000)
-    ),
-  ]);
+      preference:      'webgl',
+      powerPreference: 'default',
+    });
+    console.log('[Main] Renderer WebGL iniciado com sucesso.');
+    return;
+  } catch (err1) {
+    console.warn('[Main] WebGL falhou, tentando Canvas 2D...', err1);
+  }
+
+  // 2ª tentativa: Canvas 2D (sempre disponível)
+  try {
+    _step('WebGL indisponível — usando Canvas 2D...');
+    app = new Application(); // nova instância limpa
+    await app.init({
+      width:           SCREEN_W,
+      height:          SCREEN_H,
+      backgroundColor: 0x05050f,
+      antialias:       false,
+      resolution:      1,
+      autoDensity:     true,
+      preference:      'canvas',
+    });
+    console.log('[Main] Renderer Canvas 2D iniciado com sucesso.');
+    return;
+  } catch (err2) {
+    throw new Error('Falha ao iniciar renderer: ' + (err2?.message || String(err2)));
+  }
+}
+
+try {
+  await initRenderer();
 } catch (err) {
   _step('❌ Engine falhou: ' + (err?.message || String(err)));
   throw err;
@@ -112,8 +144,6 @@ const sceneManager = {
   /** Fade usando um overlay no stage */
   _fade(fromAlpha, toAlpha, durationMs) {
     return new Promise(resolve => {
-      const { Graphics } = /** @type {any} */ (window).__pixiImports ?? {};
-      // Cria overlay de fade diretamente
       const overlay = document.createElement('div');
       overlay.style.cssText = `
         position:absolute; inset:0;
