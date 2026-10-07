@@ -2,7 +2,7 @@
 //  MAIN — Inicialização do jogo
 // ============================================================
 
-import { Application, Assets, TextureSource } from 'pixi.js';
+import { Application, Assets, TextureSource, RendererType } from 'pixi.js';
 import { LobbyScene } from './scenes/lobby/LobbyScene.js';
 import { GameScene  } from './scenes/game/GameScene.js';
 import { SCREEN_W, SCREEN_H, MAPS, LOBBY_BG, LOBBY_PLAY_BTN } from './constants.js';
@@ -17,17 +17,16 @@ _step('Iniciando engine...');
 TextureSource.defaultOptions.scaleMode = 'linear';
 
 // ── Inicialização do renderer com fallback ──────────────────
-// NOTA: Não usamos timeout artificial — PixiJS pode demorar >8s para
-// compilar shaders WebGL na 1ª visita (sem cache de GPU no browser).
-// O timeout artificial causava falhas falsas no Vercel (deploy em HTTPS).
+// NOTA: Sem timeout artificial — PixiJS pode demorar >8s na 1ª visita
+// (compilação de shaders WebGL sem cache de GPU no Vercel/HTTPS).
 
 let app;
 
 async function initRenderer() {
-  // 1ª tentativa: WebGL (padrão, melhor performance)
+  _step('Iniciando engine PixiJS...');
+  app = new Application();
+
   try {
-    _step('Iniciando engine PixiJS... (WebGL)');
-    app = new Application();
     await app.init({
       width:           SCREEN_W,
       height:          SCREEN_H,
@@ -37,17 +36,15 @@ async function initRenderer() {
       autoDensity:     true,
       preference:      'webgl',
       powerPreference: 'default',
+      rendererOptions: {
+        hello: false,
+      },
     });
-    console.log('[Main] Renderer WebGL iniciado com sucesso.');
-    return;
-  } catch (err1) {
-    console.warn('[Main] WebGL falhou, tentando Canvas 2D...', err1);
-  }
-
-  // 2ª tentativa: Canvas 2D (sempre disponível)
-  try {
-    _step('WebGL indisponível — usando Canvas 2D...');
-    app = new Application(); // nova instância limpa
+    console.log('[Main] Renderer iniciado:',
+      app.renderer.type === RendererType.WEBGL ? 'WebGL' : 'Canvas');
+  } catch (err) {
+    console.warn('[Main] Renderer falhou, tentando Canvas...', err);
+    app = new Application();
     await app.init({
       width:           SCREEN_W,
       height:          SCREEN_H,
@@ -57,10 +54,6 @@ async function initRenderer() {
       autoDensity:     true,
       preference:      'canvas',
     });
-    console.log('[Main] Renderer Canvas 2D iniciado com sucesso.');
-    return;
-  } catch (err2) {
-    throw new Error('Falha ao iniciar renderer: ' + (err2?.message || String(err2)));
   }
 }
 

@@ -3,7 +3,14 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   build: {
     // Necessário para suportar top-level await usado no main.js
-    // (ex: await app.init(), await Assets.loadBundle(), etc.)
     target: 'esnext',
+  },
+  // ✅ Pré-processa o PixiJS no bundle — reduz drasticamente o tempo de
+  // compilação de shaders WebGL no primeiro load (cold start na Vercel)
+  optimizeDeps: {
+    include: ['pixi.js'],
+    esbuildOptions: {
+      target: 'esnext',
+    },
   },
 });
