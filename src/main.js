@@ -205,9 +205,5 @@ const sceneManager = {
 // ── Iniciar com o lobby ─────────────────────────────────────
 await sceneManager.showLobby();
 
-// ── Canvas fixo: centralizado, sem esticar ──────────────────
-const gameContainer = document.getElementById('game-container');
-gameContainer.style.position = 'absolute';
-gameContainer.style.left     = '50%';
-gameContainer.style.top      = '50%';
-gameContainer.style.transform = 'translate(-50%, -50%)';
+// ── Layout responsivo gerenciado pelo CSS no index.html ──────
+// (game-container usa min(100vw, 177.78vh) × min(56.25vw, 100vh))

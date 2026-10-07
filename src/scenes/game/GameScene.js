@@ -27,6 +27,7 @@ import { input }        from '../../core/input/InputManager.js';
 import { Player }       from '../../entities/player/Player.js';
 import { ChunkManager } from '../../world/ChunkManager.js';
 import { ChestUI }      from '../../ui/ChestUI.js';
+import { PetUI }        from '../../ui/PetUI.js';
 import { ClickEffect }  from '../../effects/vfx/ClickEffect.js';
 import {
   SCREEN_W, SCREEN_H, GROUND_Y, CHUNK_WIDTH,
@@ -96,6 +97,10 @@ export class GameScene {
     // ── Baú de recompensa ──────────────────────────────────────
     this.chestUI = new ChestUI(this.uiContainer, app);
     await this.chestUI.start();
+
+    // ── Botão de Pets (abaixo do baú, lado direito) ────────────
+    this.petUI = new PetUI(this.uiContainer, app);
+    await this.petUI.start();
 
     // ── Efeito de clique global (satisfatório em qualquer botão/imagem) ──
     this.clickEffect = new ClickEffect(app);
@@ -221,6 +226,7 @@ export class GameScene {
     this.chunkManager.destroy();
     this.player.destroy();
     if (this.chestUI)     this.chestUI.destroy();
+    if (this.petUI)       this.petUI.destroy();
     if (this.clickEffect) this.clickEffect.destroy();
     this.container.destroy({ children: true });
   }
